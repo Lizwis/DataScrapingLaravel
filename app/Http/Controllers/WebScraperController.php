@@ -4,19 +4,30 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use Eddieace\PhpSimple\HtmlDomParser;
+use App\Company;
 
 class WebScraperController extends Controller
 {
     public function index()
     {
+        include("simple_html_dom.php");
+
+
+        $address = "";
+        $phone = 0;
+
+        //
+        $zz = 0;
+        $data19 = array();
+
+        $ar = array();
+        $list_check = array();
+        $company = array();
+
+
 
         for ($iii = 1; $iii < 29; $iii++) {
-            $html = HtmlDomParser::file_get_html('https://www.medpages.info/sf/index.php?page=newsearchresults&q=Allied&sp=no&lat=&long=1&pageno=' . $iii);
-
-            $ar = array();
-            $list_check = array();
-            $company = array();
+            $html = file_get_html('https://www.medpages.info/sf/index.php?page=newsearchresults&q=Allied&sp=no&lat=&long=1&pageno=' . $iii);
 
             //$list=$html->find('section[class="result-record"]',$x);
             $list_array = $html->find('a');
@@ -44,60 +55,64 @@ class WebScraperController extends Controller
 
             //getting all contacts in the table as html, assign html table to a value
             $link_ar = array();
-            $link_descr = array();
+
             for ($s = 0; $s < count($ar); $s++) {
-                $html2 = HtmlDomParser::file_get_html('https://www.medpages.info/sf/' . $ar[$s]);
+                $html2 = file_get_html('https://www.medpages.info/sf/' . $ar[$s]);
 
                 for ($e = 0; $e < 10; $e++) {
-                    $list_div_ds = $html2->find('section[class="main-record-info"]', $e);
+                    //  $list_div_ds[] = $html2->find('section[class="main-record-info"]', $e);
 
-                    $list_div = $html2->find('section[class="contact-info bottom-border"]', $e);
+                    $link_ar[] = $html2->find('section[class="contact-info bottom-border"]', $e);
 
-                    for ($b = 0; $b < count($list_div); $b++) {
-                        $link_ar[] = $list_div->find('table[class="info-table"]', $b);
-                        $link_descr[] = $list_div_ds->find('table[class="info-table"]', $b);
-                    }
+
+                    //
                 }
             }
 
-            $telephone = array();
-            $address = array();
-            $phone = array();
-            $dd = array();
-            //
-            $zz = 0;
-            $data2 = array();
-            $address = array();
 
-            $description = array();
+            // for ($vv = 0; $vv < count($list_div); $vv++) {
+            //     return  $link_ar[] = $list_div->find('td', $vv);
+            // }
+
+
             //print_r($link_ar);
             for ($li = 0; $li < count($link_ar); $li++) {
 
-                for ($gi = 0; $gi < 1; $gi++) {
-                    $phone[] = $link_ar[$li]->find('td[class="col-lg-10 text-left"]', $gi)->plaintext;
+                // for ($gi = 0; $gi < 1; $gi++) {
+                //     $phone = $link_ar[$gi]->find('td[class="col-lg-10 text-left"]');
 
-                    $description[] = $link_descr[$li]->find('td[class="col-lg-10 text-left"]', $gi)->plaintext;
-                }
-                for ($fi = 0; $fi < 10; $fi++) {
+                //     // $description[] = $link_ar[$li]->find('td[class="col-lg-10 text-left"]', $gi)->plaintext;
+                // }
+
+                $index = 2;
+                $start = 0;
+                for ($fi =  $start; $fi < $index; $fi++) {
+                    $data1 = "";
 
                     $data1 = $link_ar[$li]->find('td[class="col-lg-10 text-left"]', $fi)->plaintext;
-                    $num = substr($data1, -1);
-                    if (strlen($data1) > 15) {
-                        $address[] = $data1;
+
+                    $num = substr($data1, 8, 2);
+                    if (is_numeric($num)) {
+                        $index = $index + 1;
+                        $start = $start + 1;
+                    } else {
+                        $address = $data1;
                     }
                 }
             }
+        }
 
-            for ($i = 0; $i < count($company); $i++) {
 
-                $catergory = "Allied professionals (Physio's; Chiro's; etc.)";
-                $data = array(
-                    'companyname' => $company[$i],
-                    'telephone' => $phone[$i],
-                    'address' => $address[$i],
-                    'catergory' => $catergory,
-                );
-                $this->db->insert('medical_directory_catergories2', $data);
+
+        for ($i = 0; $i < count($company); $i++) {
+            if (!empty($company[$i]) && !empty($address[$i]) && !empty($phone[$i])) {
+                $data = new Company;
+                $data->catergory_id = 1;
+                $data->name = $company[$i];
+                $data->address = $address[$i];
+                $data->telephone = $phone[$i];
+                //  $data->description = $description[$i];
+                $data->save();
             }
         }
     }

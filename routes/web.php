@@ -12,6 +12,6 @@
 */
 
 Route::get(
-    '/hdtuto',
+    '/',
     'WebScraperController@index'
 );
