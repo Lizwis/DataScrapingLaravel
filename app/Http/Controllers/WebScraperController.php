@@ -12,19 +12,21 @@ class WebScraperController extends Controller
     {
         include("simple_html_dom.php");
 
-
+        $address_temp = array();
         $address = array();
         $phone = array();
         $ar = array();
         $list_check = array();
         $company = array();
-        $link_ar = array();
+        //   $data_table = [];
+
+        $phone = array();
+        $description = array();
+        $data_table2 = array();
+        $location = array();
 
 
-
-
-
-        for ($iii = 1; $iii < 29; $iii++) {
+        for ($iii = 1; $iii < 210; $iii++) {
             $html = file_get_html('https://www.medpages.info/sf/index.php?page=newsearchresults&q=Allied&sp=no&lat=&long=1&pageno=' . $iii);
 
             //$list=$html->find('section[class="result-record"]',$x);
@@ -36,6 +38,14 @@ class WebScraperController extends Controller
 
             for ($com = 0; $com < 10; $com++) {
                 $company[] = $html->find('h2', $com)->plaintext;
+            }
+            for ($loc = 1; $loc < 10; $loc++) {
+                $loc_ar = $html->find('div[class="result-details"]', $loc);
+                for ($ziw = 0; $ziw < 1; $ziw++) {
+                    if ($loc_ar) {
+                        $location[] = $loc_ar->find('h4', $ziw)->plaintext;
+                    }
+                }
             }
 
 
@@ -59,73 +69,95 @@ class WebScraperController extends Controller
             for ($s = 0; $s < count($ar); $s++) {
                 $html2 = file_get_html('https://www.medpages.info/sf/' . $ar[$s]);
 
-                $link_ar = $html2->find('section[class="contact-info bottom-border"]', $s);
+                for ($e = 0; $e < 10; $e++) {
+                    $link_ar = $html2->find('section[class="contact-info bottom-border"]', $e);
 
 
+                    for ($sy = 0; $sy < 10; $sy++) {
 
-                // return "Stop";
+                        //work on this shit tommorrow
+                        if ($link_ar) {
+                            $data_table = $link_ar->find('table[class="info-table"]', $sy);
+                            //Stop
 
+                            for ($zi = 0; $zi < 1; $zi++) {
+                                if ($data_table) {
+                                    $phone[] = $data_table->find('td[class="col-lg-10 text-left"]', $zi)->plaintext;
+                                }
+                            }
 
-
-                for ($sy = 0; $sy < 10; $sy++) {
-                    //work on this shit tommorrow
-                    $data[] = $link_ar->find('td[class="col-lg-10 text-left"]', $sy);
-                    //Stop
-
+                            $data_table2 = $link_ar->find('table[class="info-table"]', $sy);
+                            for ($fi = 1; $fi < 2; $fi++) {
+                                if (!empty($data_table2)) {
+                                    $address[] = $data_table2->find('td[class="col-lg-10 text-left"]', $fi)->plaintext;
+                                }
+                            }
+                        }
+                    }
                 }
             }
+            // for ($ui = 0; $ui < count($data_table2); $ui++) {
+            //     for ($li = 0; $li < 2000; $li++) {
+            //         if ($data_table2[$ui]) {
 
-
-
-
-            for ($kkk = 0; $kkk < count($data); $kkk++) {
-                echo  $data[$kkk];
-            }
-
-
-
-            return 1;
-
-
-
-
-
-
-
-
-
-            // for ($vv = 0; $vv < count($list_div); $vv++) {
-            //     return  $link_ar[] = $list_div->find('td', $vv);
+            //             $address_temp = $data_table2->find('td[class="col-lg-10 text-left"]', $li);
+            //         }
+            //     }
+            //     $address[] = $address_temp->plaintext;
             // }
 
 
-            //print_r($link_ar);
-            for ($li = 0; $li < 10; $li++) {
-
-
-                echo $link_ar[$li];
-                echo "<br/>";
 
 
 
+            for ($kkk = 0; $kkk < count($address); $kkk++) {
+                $data_ar = "";
+                if (strlen($address[$kkk]) > 15) {
+                    $data_ar = $address[$kkk];
+                } else {
+                    $data_ar = "NULL";
+                }
 
-                // $description[] = $link_ar[$li]->find('td[class="col-lg-10 text-left"]', $gi)->plaintext;
-
-                //return $address = $link_ar[1]->find('td[class="col-lg-10 text-left"]');
-
-                // $num = substr($data1, 8, 2);
-                // if (is_numeric($num)) {
-                //     $index = $index + 1;
-                //     $start = $start + 1;
-                // } else {
-                //     return $address = $data1;
-                // }
+                $address_temp[] =  $data_ar;
             }
+
+            // for ($zz = 0; $zz < count($address_temp); $zz++) {
+            //     echo $address_temp[$zz];
+            // }
+
+            for ($ui = 0; $ui < count($location); $ui++) {
+                echo  $location[$ui];
+            }
+
             return "stop";
+
+
+            for ($zi = 0; $zi < 1; $zi++) {
+                if ($data_table) {
+                    $phone[] = $data_table->find('td[class="col-lg-10 text-left"]', $zi);
+                }
+            }
+            // $description[] = $zink_descr[$zi]->find('td[class="col-lg-10 text-left"]', $gi)->plaintext;
+
+
+
+            // for ($fi = 0; $fi < 10; $fi++) {
+            //     $data1 = $data_table[$zi]->find('td[class="col-lg-10 text-left"]', $fi);
+            //     if (strlen($data1) > 15) {
+            //         $address[] = $data1;
+            //     }
+            // }
+
+
+
+
+            for ($ui = 0; $ui < count($location); $ui++) {
+                echo  $location[$ui];
+            }
         }
 
-        //  return $phone;
 
+        return "stop";
         for ($i = 0; $i < count($company); $i++) {
             if (!empty($company[$i]) && !empty($address[$i]) && !empty($phone[$i])) {
                 $data = new Company;
