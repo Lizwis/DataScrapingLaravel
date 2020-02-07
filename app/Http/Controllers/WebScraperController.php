@@ -13,16 +13,14 @@ class WebScraperController extends Controller
         include("simple_html_dom.php");
 
 
-        $address = "";
-        $phone = 0;
-
-        //
-        $zz = 0;
-        $data19 = array();
-
+        $address = array();
+        $phone = array();
         $ar = array();
         $list_check = array();
         $company = array();
+        $link_ar = array();
+
+
 
 
 
@@ -40,6 +38,9 @@ class WebScraperController extends Controller
                 $company[] = $html->find('h2', $com)->plaintext;
             }
 
+
+
+
             //$num=substr($data1, -1)
             for ($i = 0; $i < count($list_check); $i++) {
 
@@ -54,20 +55,43 @@ class WebScraperController extends Controller
             }
 
             //getting all contacts in the table as html, assign html table to a value
-            $link_ar = array();
-
+            $df = array();
             for ($s = 0; $s < count($ar); $s++) {
                 $html2 = file_get_html('https://www.medpages.info/sf/' . $ar[$s]);
 
-                for ($e = 0; $e < 10; $e++) {
-                    //  $list_div_ds[] = $html2->find('section[class="main-record-info"]', $e);
-
-                    $link_ar[] = $html2->find('section[class="contact-info bottom-border"]', $e);
+                $link_ar = $html2->find('section[class="contact-info bottom-border"]', $s);
 
 
-                    //
+
+                // return "Stop";
+
+
+
+                for ($sy = 0; $sy < 10; $sy++) {
+                    //work on this shit tommorrow
+                    $data[] = $link_ar->find('td[class="col-lg-10 text-left"]', $sy);
+                    //Stop
+
                 }
             }
+
+
+
+
+            for ($kkk = 0; $kkk < count($data); $kkk++) {
+                echo  $data[$kkk];
+            }
+
+
+
+            return 1;
+
+
+
+
+
+
+
 
 
             // for ($vv = 0; $vv < count($list_div); $vv++) {
@@ -76,33 +100,31 @@ class WebScraperController extends Controller
 
 
             //print_r($link_ar);
-            for ($li = 0; $li < count($link_ar); $li++) {
+            for ($li = 0; $li < 10; $li++) {
 
-                // for ($gi = 0; $gi < 1; $gi++) {
-                //     $phone = $link_ar[$gi]->find('td[class="col-lg-10 text-left"]');
 
-                //     // $description[] = $link_ar[$li]->find('td[class="col-lg-10 text-left"]', $gi)->plaintext;
+                echo $link_ar[$li];
+                echo "<br/>";
+
+
+
+
+                // $description[] = $link_ar[$li]->find('td[class="col-lg-10 text-left"]', $gi)->plaintext;
+
+                //return $address = $link_ar[1]->find('td[class="col-lg-10 text-left"]');
+
+                // $num = substr($data1, 8, 2);
+                // if (is_numeric($num)) {
+                //     $index = $index + 1;
+                //     $start = $start + 1;
+                // } else {
+                //     return $address = $data1;
                 // }
-
-                $index = 2;
-                $start = 0;
-                for ($fi =  $start; $fi < $index; $fi++) {
-                    $data1 = "";
-
-                    $data1 = $link_ar[$li]->find('td[class="col-lg-10 text-left"]', $fi)->plaintext;
-
-                    $num = substr($data1, 8, 2);
-                    if (is_numeric($num)) {
-                        $index = $index + 1;
-                        $start = $start + 1;
-                    } else {
-                        $address = $data1;
-                    }
-                }
             }
+            return "stop";
         }
 
-
+        //  return $phone;
 
         for ($i = 0; $i < count($company); $i++) {
             if (!empty($company[$i]) && !empty($address[$i]) && !empty($phone[$i])) {
