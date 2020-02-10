@@ -12,22 +12,23 @@ class WebScraperController extends Controller
     {
         include("simple_html_dom.php");
 
-        $address_temp = array();
-        $address = array();
-        $phone = array();
-        $ar = array();
-        $list_check = array();
-        $company = array();
-        //   $data_table = [];
-
-        $phone = array();
-        $description = array();
-        $data_table2 = array();
-        $location = array();
 
 
-        for ($iii = 1; $iii < 210; $iii++) {
+        for ($iii = 1; $iii < 28; $iii++) {
             $html = file_get_html('https://www.medpages.info/sf/index.php?page=newsearchresults&q=Allied&sp=no&lat=&long=1&pageno=' . $iii);
+
+            $address_temp = [];
+            $address = [];
+            $phone = [];
+            $ar = [];
+            $list_check = [];
+            $company = [];
+            //   $data_table = [];
+
+            $phone = [];
+            $description = [];
+            $data_table2 = [];
+            $location = [];
 
             //$list=$html->find('section[class="result-record"]',$x);
             $list_array = $html->find('a');
@@ -39,17 +40,25 @@ class WebScraperController extends Controller
             for ($com = 0; $com < 10; $com++) {
                 $company[] = $html->find('h2', $com)->plaintext;
             }
-            for ($loc = 1; $loc < 10; $loc++) {
+            for ($loc = 0; $loc < 10; $loc++) {
                 $loc_ar = $html->find('div[class="result-details"]', $loc);
                 for ($ziw = 0; $ziw < 1; $ziw++) {
-                    if ($loc_ar) {
-                        $location[] = $loc_ar->find('h4', $ziw)->plaintext;
+                    if (!empty($loc_ar)) {
+                        if ($loc_ar) {
+                            $location[] = $loc_ar->find('h4', $ziw)->plaintext;
+                        }
                     }
                 }
             }
 
 
-
+            // for ($g = 0; $g < count($company); $g++) {
+            //     echo $company[$g];
+            //     echo "<br/>";
+            //     echo "<br/>";
+            //     echo "<br/>";
+            // }
+            // return "stop";
 
             //$num=substr($data1, -1)
             for ($i = 0; $i < count($list_check); $i++) {
@@ -65,7 +74,6 @@ class WebScraperController extends Controller
             }
 
             //getting all contacts in the table as html, assign html table to a value
-            $df = array();
             for ($s = 0; $s < count($ar); $s++) {
                 $html2 = file_get_html('https://www.medpages.info/sf/' . $ar[$s]);
 
@@ -86,13 +94,34 @@ class WebScraperController extends Controller
                                 }
                             }
 
-                            $data_table2 = $link_ar->find('table[class="info-table"]', $sy);
-                            for ($fi = 1; $fi < 2; $fi++) {
-                                if (!empty($data_table2)) {
-                                    $address[] = $data_table2->find('td[class="col-lg-10 text-left"]', $fi)->plaintext;
-                                }
-                            }
+                            // $data_table2 = $link_ar->find('table[class="info-table"]', $sy);
+                            // for ($fi = 0; $fi < 2; $fi++) {
+                            //     if ($data_table2) {
+                            //         $address[] = $data_table2->find('td[class="col-lg-10 text-left"]', $fi)->plaintext;
+                            //     }
+                            // }
                         }
+                    }
+                }
+
+
+                // for ($kkk = 0; $kkk < count($address); $kkk++) {
+                //     if (strlen($address[$kkk]) > 15) {
+                //         $address_temp[] = $address[$kkk];
+                //     } else {
+                //         $address_temp[] = "NULL";
+                //     }
+                // }
+                $data = new Company;
+                for ($ib = 0; $ib < 10; $ib++) {
+                    if (!empty($company[$ib]) && !empty($phone[$ib])) {
+                        $data->catergory_id = 1;
+                        $data->name = $company[$ib];
+                        $data->location = $location[$ib];
+                        //$data->address = $address_temp[$ib];
+                        $data->telephone = $phone[$ib];
+                        //  $data->description = $description[$i];
+                        $data->save();
                     }
                 }
             }
@@ -110,33 +139,21 @@ class WebScraperController extends Controller
 
 
 
-            for ($kkk = 0; $kkk < count($address); $kkk++) {
-                $data_ar = "";
-                if (strlen($address[$kkk]) > 15) {
-                    $data_ar = $address[$kkk];
-                } else {
-                    $data_ar = "NULL";
-                }
 
-                $address_temp[] =  $data_ar;
-            }
 
             // for ($zz = 0; $zz < count($address_temp); $zz++) {
             //     echo $address_temp[$zz];
             // }
 
-            for ($ui = 0; $ui < count($location); $ui++) {
-                echo  $location[$ui];
-            }
-
-            return "stop";
 
 
-            for ($zi = 0; $zi < 1; $zi++) {
-                if ($data_table) {
-                    $phone[] = $data_table->find('td[class="col-lg-10 text-left"]', $zi);
-                }
-            }
+            // for ($zi = 0; $zi < 1; $zi++) {
+            //     if ($data_table) {
+            //         $phone[] = $data_table->find('td[class="col-lg-10 text-left"]', $zi);
+            //     }
+            // }
+
+
             // $description[] = $zink_descr[$zi]->find('td[class="col-lg-10 text-left"]', $gi)->plaintext;
 
 
@@ -151,23 +168,6 @@ class WebScraperController extends Controller
 
 
 
-            for ($ui = 0; $ui < count($location); $ui++) {
-                echo  $location[$ui];
-            }
-        }
-
-
-        return "stop";
-        for ($i = 0; $i < count($company); $i++) {
-            if (!empty($company[$i]) && !empty($address[$i]) && !empty($phone[$i])) {
-                $data = new Company;
-                $data->catergory_id = 1;
-                $data->name = $company[$i];
-                $data->address = $address[$i];
-                $data->telephone = $phone[$i];
-                //  $data->description = $description[$i];
-                $data->save();
-            }
         }
     }
 }
