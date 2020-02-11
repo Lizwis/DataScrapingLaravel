@@ -10,7 +10,7 @@ class WebScraperController extends Controller
 {
     public function index()
     {
-        include("simple_html_dom.php");
+        // include("simple_html_dom.php");
 
 
 
