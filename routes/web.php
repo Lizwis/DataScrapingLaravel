@@ -15,3 +15,5 @@ Route::get(
     '/',
     'WebScraperController@index'
 );
+
+Route::get('export', 'ExportsContriller@index');
