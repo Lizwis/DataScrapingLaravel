@@ -14,8 +14,8 @@ class WebScraperController extends Controller
 
 
 
-        for ($iii = 1; $iii < 50; $iii++) {
-            $html = file_get_html('https://www.medpages.info/sf/index.php?page=newsearchresults&q=Dieticians&sp=no&lat=&long=1&pageno' . $iii);
+        for ($iii = 0; $iii < 50; $iii++) {
+            $html = file_get_html('https://www.medpages.info/sf/index.php?page=newsearchresults&q=Veterinary%20surgeons&sp=no&lat=&long=1&pageno=' . $iii);
 
             $address_temp = [];
             $address = [];
@@ -115,7 +115,7 @@ class WebScraperController extends Controller
                 $data = new Company;
                 for ($ib = 0; $ib < 10; $ib++) {
                     if (!empty($company[$ib]) && !empty($phone[$ib])) {
-                        $data->catergory_id = 23;
+                        $data->catergory_id = 116;
                         $data->name = $company[$ib];
                         $data->location = $location[$ib];
                         //$data->address = $address_temp[$ib];
